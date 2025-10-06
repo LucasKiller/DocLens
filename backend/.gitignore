@@ -1,0 +1,17 @@
+# deps
+node_modules/
+
+# builds / coverage
+dist/
+build/
+coverage/
+
+# env & cache
+.env
+.env.*
+.eslintcache
+*.log
+
+# SO
+.DS_Store
+Thumbs.db
