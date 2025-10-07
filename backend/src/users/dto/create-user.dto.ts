@@ -1,5 +1,6 @@
 import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
-import { Role } from '@prisma/client';
+import { RoleValues } from './role.enum';
+import type { RoleDto } from './role.enum';
 
 export class CreateUserDto {
   @IsEmail()
@@ -14,6 +15,6 @@ export class CreateUserDto {
   password: string;
 
   @IsOptional()
-  @IsEnum(Role)
-  role?: Role; // só admin deverá poder setar
+  @IsEnum(RoleValues)
+  role?: RoleDto; // só admin deverá poder setar
 }
