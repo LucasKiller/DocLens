@@ -19,6 +19,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "strictBindCallApply": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "plugins": [
+      { "name": "@nestjs/swagger/plugin", "options": { "classValidatorShim": true, "introspectComments": true } }
+    ]
   }
 }
