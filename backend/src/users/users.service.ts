@@ -38,7 +38,7 @@ export class UsersService {
     return users.map(sanitizeUser);
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
     return sanitizeUser(user);
@@ -48,7 +48,7 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async update(id: number, dto: UpdateUserDto, allowRole = false) {
+  async update(id: string, dto: UpdateUserDto, allowRole = false) {
     const data: any = {
       email: dto.email,
       name: dto.name,
@@ -64,7 +64,7 @@ export class UsersService {
     return sanitizeUser(user);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.prisma.user.delete({ where: { id } });
     return { success: true };
   }

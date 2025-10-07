@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, Req, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, UseGuards, Req, ForbiddenException } from '@nestjs/common';
 import { ApiBearerAuth, ApiConflictResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -9,7 +9,7 @@ import { RolesGuard } from '../auth/roles/roles.guard';
 import { RoleValues } from './dto/role.enum';
 
 class UserResponse {
-  id: number;
+  id: string;
   email: string;
   name: string;
   role: keyof typeof RoleValues;
@@ -48,7 +48,7 @@ export class UsersController {
   @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
   // Ver 1 usuário: ADMIN ou o próprio dono
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string, @Req() req: any) {
     const isSelf = req.user.userId === id;
     if (!isSelf && req.user.role !== 'ADMIN') throw new ForbiddenException();
     return this.usersService.findOne(id);
@@ -59,7 +59,7 @@ export class UsersController {
   @ApiForbiddenResponse({ description: 'Sem permissão para alterar' })
   // Atualizar: ADMIN pode tudo; USER só pode atualizar próprio nome/senha
   @Patch(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto, @Req() req: any) {
+  async update(@Param('id', new ParseUUIDPipe()) id: string, @Body() dto: UpdateUserDto, @Req() req: any) {
     const isSelf = req.user.userId === id;
     const isAdmin = req.user.role === 'ADMIN';
     if (!isSelf && !isAdmin) throw new ForbiddenException();
@@ -74,7 +74,7 @@ export class UsersController {
   // Remover: apenas ADMIN
   @Roles('ADMIN')
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.usersService.remove(id);
   }
 }

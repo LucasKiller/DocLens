@@ -49,7 +49,7 @@ export class AuthController {
   @ApiOkResponse({
     schema: {
       properties: {
-        userId: { type: 'number', example: 1 },
+        userId: { type: 'string', format: 'uuid', example: '6e7a0b3d-5a55-4d0e-9f2b-3e0e3b2b7b9a' },
         email: { type: 'string', example: 'admin@doclens.com' },
         role: { type: 'string', enum: ['USER', 'ADMIN'], example: 'ADMIN' },
       },

@@ -78,7 +78,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -115,7 +115,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -162,7 +162,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -273,8 +273,9 @@
                 "schema": {
                   "properties": {
                     "userId": {
-                      "type": "number",
-                      "example": 1
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "6e7a0b3d-5a55-4d0e-9f2b-3e0e3b2b7b9a"
                     },
                     "email": {
                       "type": "string",

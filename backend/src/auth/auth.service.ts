@@ -26,7 +26,7 @@ export class AuthService {
     return rest;
   }
 
-  signToken(user: { id: number; email: string; role: string }) {
+  signToken(user: { id: string; email: string; role: string }) {
     const payload = { sub: user.id, email: user.email, role: user.role };
     return { access_token: this.jwt.sign(payload) }; // secret+expiresIn ja vem do JwtModule
   }
