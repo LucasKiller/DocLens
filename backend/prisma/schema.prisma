@@ -18,16 +18,6 @@ enum Role {
   ADMIN
 }
 
-model User {
-  id            String    @id @default(uuid()) @db.Uuid
-  email         String    @unique
-  name          String
-  passwordHash  String
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-}
-
 enum DocumentStatus {
   QUEUED
   PROCESSING
@@ -35,41 +25,53 @@ enum DocumentStatus {
   FAILED
 }
 
+model User {
+  id             String           @id @default(uuid()) @db.Uuid
+  email          String           @unique
+  name           String
+  passwordHash   String
+  role           Role             @default(USER)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  Document       Document[]
+  LlmInteraction LlmInteraction[]
+}
+
 model Document {
-  id           String          @id @default(uuid()) @db.Uuid
-  ownerId      String          @db.Uuid
-  owner        User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  filename     String
-  mimeType     String
-  size         Int
-  storagePath  String
-  status       DocumentStatus  @default(QUEUED)
-  error        String?
-  processedAt  DateTime?
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  id          String         @id @default(uuid()) @db.Uuid
+  ownerId     String         @db.Uuid
+  owner       User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  filename    String
+  mimeType    String
+  size        Int
+  storagePath String
+  status      DocumentStatus @default(QUEUED)
+  error       String?
+  processedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   ocr          OcrResult?
   interactions LlmInteraction[]
-}
-
-model OcrResult {
-  id        String   @id @default(uuid()) @db.Uuid
-  docId     String   @unique @db.Uuid
-  document  Document @relation(fields: [docId], references: [id], onDelete: Cascade)
-  text      String
-  language  String?
-  confidence Float?
-  createdAt DateTime @default(now())
 }
 
 model LlmInteraction {
   id        String   @id @default(uuid()) @db.Uuid
   docId     String   @db.Uuid
   document  Document @relation(fields: [docId], references: [id], onDelete: Cascade)
-  userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   question  String
   answer    String
   createdAt DateTime @default(now())
+}
+
+model OcrResult {
+  id         String   @id @default(uuid()) @db.Uuid
+  docId      String   @unique @db.Uuid
+  document   Document @relation(fields: [docId], references: [id], onDelete: Cascade)
+  text       String
+  language   String?
+  confidence Float?
+  createdAt  DateTime @default(now())
 }
