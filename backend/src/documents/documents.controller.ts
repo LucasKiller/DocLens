@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 const allowed = new Set([
-  'image/jpeg', 'image/png', 'image/webp', 'image/tiff', 'image/bmp'
+  'image/jpeg', 'image/png', 'image/webp', 'image/tiff', 'image/bmp', 'application/pdf'
 ]);
 
 function filenameGenerator(
