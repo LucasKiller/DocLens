@@ -29,6 +29,6 @@ async function bootstrap() {
     writeFileSync('./openapi.json', JSON.stringify(doc, null, 2));
   }
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
