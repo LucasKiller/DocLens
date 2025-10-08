@@ -305,6 +305,189 @@
           "Auth"
         ]
       }
+    },
+    "/documents": {
+      "post": {
+        "operationId": "DocumentsController_upload",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Upload de imagem para OCR",
+        "tags": [
+          "Documents"
+        ]
+      },
+      "get": {
+        "operationId": "DocumentsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Listar documentos do usuário (ADMIN pode filtrar)",
+        "tags": [
+          "Documents"
+        ]
+      }
+    },
+    "/documents/{id}": {
+      "get": {
+        "operationId": "DocumentsController_getOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Detalhe do documento (inclui OCR quando pronto)",
+        "tags": [
+          "Documents"
+        ]
+      }
+    },
+    "/documents/{id}/status": {
+      "get": {
+        "operationId": "DocumentsController_status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Status do OCR",
+        "tags": [
+          "Documents"
+        ]
+      }
+    },
+    "/documents/{id}/ask": {
+      "post": {
+        "operationId": "DocumentsController_ask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Perguntar ao LLM sobre o documento (usa texto do OCR)",
+        "tags": [
+          "Documents"
+        ]
+      }
+    },
+    "/documents/{id}/download": {
+      "get": {
+        "operationId": "DocumentsController_download",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Download do pacote (texto OCR + interações)",
+        "tags": [
+          "Documents"
+        ]
+      }
     }
   },
   "info": {
@@ -369,6 +552,18 @@
       "LoginDto": {
         "type": "object",
         "properties": {}
+      },
+      "AskDto": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "example": "Quais são os valores totais e a data?"
+          }
+        },
+        "required": [
+          "question"
+        ]
       }
     }
   }
