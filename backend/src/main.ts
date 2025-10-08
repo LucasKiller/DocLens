@@ -10,6 +10,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
+  // CORS configurado para aceitar requisições do frontend
+  app.enableCors({
+    origin: [process.env.FRONTEND],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+  });
+
   // Swagger só em não-produção
   if (process.env.NODE_ENV !== 'PROD') {
     const cfg = new DocumentBuilder()
