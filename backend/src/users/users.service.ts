@@ -1,9 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
-import { Prisma } from '@prisma/client';
 
 function sanitizeUser<T extends { passwordHash?: string }>(user: T) {
   if (!user) return user;
@@ -13,7 +12,7 @@ function sanitizeUser<T extends { passwordHash?: string }>(user: T) {
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(dto: CreateUserDto, allowRole = false) {
     const exists = await this.prisma.user.findUnique({ where: { email: dto.email } });
@@ -49,12 +48,22 @@ export class UsersService {
   }
 
   async update(id: string, dto: UpdateUserDto, allowRole = false) {
-    const data: any = {
-      email: dto.email,
-      name: dto.name,
-    };
-    if (dto.password) data.passwordHash = await bcrypt.hash(dto.password, 10);
-    if (allowRole && dto.role) data.role = dto.role;
+    const data: any = {};
+
+    if (dto.email !== undefined) data.email = dto.email;
+    if (dto.name !== undefined) data.name = dto.name;
+
+    if (dto.password) {
+      data.passwordHash = await bcrypt.hash(dto.password, 10);
+    }
+
+
+    if (dto.role !== undefined && !allowRole) {
+      throw new ForbiddenException('Alterar role requer perfil ADMIN');
+    }
+    if (dto.role !== undefined && allowRole) {
+      data.role = dto.role;
+    }
 
     const user = await this.prisma.user.update({
       where: { id },

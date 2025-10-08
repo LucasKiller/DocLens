@@ -7,7 +7,7 @@ import { RolesGuard } from '../auth/roles/roles.guard';
 import { DocumentsService } from './documents.service';
 import { AskDto } from './dto/ask.dto';
 import type { Response, Express, Request } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 const allowed = new Set([
@@ -19,7 +19,7 @@ function filenameGenerator(
   file: Express.Multer.File,
   callback: (error: Error | null, filename: string) => void,
 ): void {
-  const name = uuidv4().replace(/-/g, '');
+  const name = randomUUID().replace(/-/g, '');
   callback(null, `${name}${extname(file.originalname)}`);
 }
 
