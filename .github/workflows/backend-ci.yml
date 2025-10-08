@@ -27,7 +27,7 @@ jobs:
 
     env:
       NODE_ENV: test
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/doclens_test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/doclens_test
       JWT_SECRET: test-secret
       JWT_EXPIRES: 15m
       UPLOAD_DIR: ./uploads
