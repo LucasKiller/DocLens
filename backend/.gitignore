@@ -1,0 +1,18 @@
+# deps
+node_modules/
+
+# builds / coverage
+dist/
+build/
+coverage/
+
+# env & cache
+.env
+.eslintcache
+*.log
+
+# SO
+.DS_Store
+Thumbs.db
+
+/generated/prisma
