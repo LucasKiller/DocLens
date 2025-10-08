@@ -8,7 +8,6 @@ coverage/
 
 # env & cache
 .env
-.env.*
 .eslintcache
 *.log
 
