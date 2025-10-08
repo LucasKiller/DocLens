@@ -31,7 +31,7 @@ export class LlmService {
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(apiKey);
 
-    const modelId = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+    const modelId = process.env.LLM_MODEL || 'gemini-2.5-flash-lite';
     // limita contexto para 20.000 caracteres
     const safeContext = context.slice(0, 20_000);
 
