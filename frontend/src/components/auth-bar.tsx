@@ -24,7 +24,6 @@ export function AuthBar({ onToken }: { onToken: (t: string) => void }) {
   if (token) {
     return (
       <div className="flex items-center gap-3">
-        <span className="text-sm opacity-80">Autenticado</span>
         <button className="btn-outline" onClick={logout}>Sair</button>
       </div>
     );

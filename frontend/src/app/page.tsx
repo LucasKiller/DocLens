@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AuthBar } from '@/components/auth-bar';
 import { UploadCard } from '@/components/upload-card';
 import { DocumentsList } from '@/components/documents-list';
+import { UserGreeting } from '@/components/user-greeting';
 
 export default function Page() {
   const [token, setToken] = useState('');
@@ -12,6 +13,7 @@ export default function Page() {
   return (
     <main className="max-w-5xl mx-auto px-6">
       <div className="flex items-center justify-between mt-6 mb-10">
+        <UserGreeting token={token} />
         <div />
         <AuthBar onToken={setToken} />
       </div>
@@ -21,7 +23,7 @@ export default function Page() {
           Assistente de Documentos <span className="text-indigo-400">IA</span>
         </h1>
         <p className="mt-4 text-lg opacity-80">
-          Envie uma nota fiscal para extrair texto e iniciar uma conversa.
+          Envie um documento para extrair texto e iniciar uma conversa.
         </p>
       </section>
 
