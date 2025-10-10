@@ -84,9 +84,9 @@ export function UploadCard({ token }: { token: string }) {
           <Upload className="opacity-80" size={28} />
         </div>
         <p className="text-2xl font-semibold mb-2">
-          {isDragActive ? 'Solte para enviar' : 'Click to upload'}
+          {isDragActive ? 'Solte para enviar' : 'Clique para enviar'}
         </p>
-        <p className="opacity-70">ou drag and drop • PNG, JPG, WEBP, PDF</p>
+        <p className="opacity-70">ou arraste e solte • PNG, JPG, WEBP, PDF</p>
         <p className="mt-4 text-indigo-300">{hint}</p>
       </div>
 
