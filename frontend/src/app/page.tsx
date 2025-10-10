@@ -18,7 +18,7 @@ export default function Page() {
 
       <section className="text-center mt-6">
         <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">
-          Document <span className="text-indigo-400">AI</span> Assistant
+          Assistente de Documentos <span className="text-indigo-400">IA</span>
         </h1>
         <p className="mt-4 text-lg opacity-80">
           Envie uma nota fiscal para extrair texto e iniciar uma conversa.
@@ -30,7 +30,6 @@ export default function Page() {
       </section>
 
       <section className="mt-10">
-        {/* força recarregar lista ao criar novo documento */}
         {token && <DocumentsList key={refreshKey} token={token} />}
       </section>
     </main>
