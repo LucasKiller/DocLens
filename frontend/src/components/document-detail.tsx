@@ -30,7 +30,14 @@ export function DocumentDetail({
     try {
       setLoading(true);
       const d = await apiGet<Detail>(`/documents/${id}`, token);
-      setData(d);
+      const list = await apiGet<{ items: { id: string; question: string; answer: string; createdAt: string }[]; nextCursor: string | null }>(
+        `/documents/${id}/interactions?take=500`,
+        token
+      );
+      setData({
+        ...d,
+        interactions: list.items, // histórico completo
+      });
       // auto-scroll para o fim do histórico ao abrir
       setTimeout(() => {
         if (histRef.current) histRef.current.scrollTop = histRef.current.scrollHeight;
