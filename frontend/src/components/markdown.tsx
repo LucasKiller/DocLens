@@ -17,14 +17,15 @@ export function Markdown({ content }: { content: string }) {
           a: (props) => (
             <a {...props} target="_blank" rel="noreferrer" className="text-indigo-300 underline" />
           ),
-          code: ({node, inline, className, children, ...props}) => {
+          code: (props: any) => {
+            const { node, inline, className, children, ...rest } = props;
             // mantém <code> inline sem borda, e blocos com <pre><code>
             if (inline) {
               return <code className="px-1 rounded bg-white/10">{children}</code>;
             }
             return (
               <pre className="rounded-xl p-3 overflow-auto bg-black/40 border border-white/10">
-                <code className={className} {...props}>{children}</code>
+                <code className={className} {...rest}>{children}</code>
               </pre>
             );
           },
