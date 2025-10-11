@@ -49,7 +49,7 @@ export function ChatPanel({ token, docId }: { token: string; docId: string }) {
           </div>
         ))}
         {messages.length === 0 && (
-          <div className="opacity-60 text-sm">Faça perguntas como “Qual o valor total e a data?”</div>
+          <div className="opacity-60 text-sm">Faça perguntas como “Qual é o resumo do documento?”</div>
         )}
       </div>
 
