@@ -277,6 +277,10 @@
                       "format": "uuid",
                       "example": "6e7a0b3d-5a55-4d0e-9f2b-3e0e3b2b7b9a"
                     },
+                    "name": {
+                      "type": "string",
+                      "example": "Lucas Galhardo"
+                    },
                     "email": {
                       "type": "string",
                       "example": "admin@doclens.com"

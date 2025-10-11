@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/* Tema escuro base */
+:root { color-scheme: dark; }
+
+body {
+  background-color: #0c1222;
+  color: #f4f4f5;
+  background-image:
+    radial-gradient(1200px 600px at 0% 0%, rgba(88, 28, 135, 0.15), transparent 60%),
+    radial-gradient(1200px 600px at 100% 0%, rgba(37, 99, 235, 0.12), transparent 60%);
+  margin: 0;
+}
+
+/* Componentes “globais” */
+.card {
+  background-color: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 20px 50px rgba(0,0,0,.35);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  background-color: rgb(79 70 229);
+  transition: background-color .2s ease, transform .15s ease;
+}
+.btn:hover { background-color: rgb(99 102 241); }
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: transparent;
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.btn-outline:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.45); }
+
+.input {
+  background-color: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+}
+.input:focus {
+  box-shadow: 0 0 0 2px rgba(99,102,241,.6);
+  border-color: transparent;
+}
+
+/* barra de progresso */
+.progress {
+  position: relative;
+  height: 10px; border-radius: 999px;
+  background: rgba(255,255,255,0.08); overflow: hidden;
+}
+.progress::after{
+  content:""; position:absolute; inset:0;
+  transform: translateX(-100%);
+  animation: ind 1.2s infinite;
+  background: linear-gradient(90deg, rgba(99,102,241,.15), rgba(99,102,241,.6), rgba(99,102,241,.15));
+}
+@keyframes ind { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+.markdown {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.markdown h1,.markdown h2,.markdown h3 { margin: .8rem 0 .5rem; font-weight: 700; }
+.markdown h1 { font-size: 1.4rem; }
+.markdown h2 { font-size: 1.2rem; }
+.markdown h3 { font-size: 1.05rem; }
+.markdown p { margin: .5rem 0; }
+.markdown ul,.markdown ol { margin: .5rem 0 .5rem 1.25rem; }
+.markdown li + li { margin-top: .25rem; }
+.markdown blockquote {
+  margin: .75rem 0; padding: .5rem .75rem;
+  border-left: 3px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.04); border-radius: .5rem;
+}
+.markdown table { width: 100%; border-collapse: collapse; margin: .5rem 0; }
+.markdown th,.markdown td {
+  border: 1px solid rgba(255,255,255,.1);
+  padding: .4rem .5rem; text-align: left;
+}
+.markdown th { background: rgba(255,255,255,.06); }
