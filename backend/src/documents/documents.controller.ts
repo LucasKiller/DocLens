@@ -1,4 +1,8 @@
-import { Controller, Get, Post, Body, Param, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Query, Res, ParseUUIDPipe, Req } from '@nestjs/common';
+import {
+  Controller, Get, Post, Body, Param, UseGuards, UseInterceptors,
+  UploadedFile, BadRequestException, Query, Res, ParseUUIDPipe, Req,
+  DefaultValuePipe, ParseIntPipe,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -80,6 +84,17 @@ export class DocumentsController {
   @Get(':id/status')
   status(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
     return this.docs.getStatus(id, (req as any).user);
+  }
+
+  @ApiOperation({ summary: 'Listar histórico de interações do LLM para o documento' })
+  @Get(':id/interactions')
+  listInteractions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('take', new DefaultValuePipe(100), ParseIntPipe) take: number,
+    @Query('cursor') cursor: string | undefined,
+    @Req() req: Request,
+  ) {
+    return this.docs.listInteractions(id, (req as any).user, { take, cursor });
   }
 
   @ApiOperation({ summary: 'Perguntar ao LLM sobre o documento (usa texto do OCR)' })

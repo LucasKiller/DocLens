@@ -425,6 +425,43 @@
         ]
       }
     },
+    "/documents/{id}/interactions": {
+      "get": {
+        "operationId": "DocumentsController_listInteractions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "take",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Listar histórico de interações do LLM para o documento",
+        "tags": [
+          "Documents"
+        ]
+      }
+    },
     "/documents/{id}/ask": {
       "post": {
         "operationId": "DocumentsController_ask",

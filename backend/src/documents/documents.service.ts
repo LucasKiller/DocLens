@@ -69,6 +69,33 @@ export class DocumentsService {
     return { status: doc.status, error: doc.error, processedAt: doc.processedAt };
   }
 
+  async listInteractions(
+    docId: string,
+    user: { userId: string; role: string },
+    opts: { take?: number; cursor?: string } = {},
+  ) {
+    const doc = await this.prisma.document.findUnique({
+      where: { id: docId },
+      select: { ownerId: true },
+    });
+    if (!doc) throw new NotFoundException('Documento não encontrado');
+    this.assertAccess(doc, user);
+
+    const take = Math.min(Math.max(opts.take ?? 100, 1), 500);
+    const cursor = opts.cursor ? { id: opts.cursor } : undefined;
+
+    const items = await this.prisma.llmInteraction.findMany({
+      where: { docId },
+      orderBy: { createdAt: 'asc' },
+      ...(cursor ? { skip: 1, cursor } : {}),
+      take,
+      select: { id: true, question: true, answer: true, createdAt: true },
+    });
+
+    const nextCursor = items.length === take ? items[items.length - 1].id : null;
+    return { items, nextCursor };
+  }
+
   async ask(docId: string, user: { userId: string; role: string }, question: string) {
     const doc = await this.prisma.document.findUnique({
       where: { id: docId },
@@ -83,11 +110,12 @@ export class DocumentsService {
 
     const answer = await this.llm.answer(question, doc.ocr.text);
 
-    const inter = await this.prisma.llmInteraction.create({
+    const interaction = await this.prisma.llmInteraction.create({
       data: { docId: doc.id, userId: user.userId, question, answer },
+      select: { id: true, question: true, answer: true, createdAt: true },
     });
 
-    return inter;
+    return { answer, interaction };
   }
 
   async download(docId: string, user: { userId: string; role: string }) {
