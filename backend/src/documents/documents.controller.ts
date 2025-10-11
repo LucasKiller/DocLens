@@ -1,7 +1,7 @@
 import {
   Controller, Get, Post, Body, Param, UseGuards, UseInterceptors,
   UploadedFile, BadRequestException, Query, Res, ParseUUIDPipe, Req,
-  DefaultValuePipe, ParseIntPipe,
+  DefaultValuePipe, ParseIntPipe, Delete
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -32,7 +32,7 @@ function filenameGenerator(
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('documents')
 export class DocumentsController {
-  constructor(private docs: DocumentsService) {}
+  constructor(private docs: DocumentsService) { }
 
   @ApiOperation({ summary: 'Upload de imagem para OCR' })
   @ApiConsumes('multipart/form-data')
@@ -95,6 +95,12 @@ export class DocumentsController {
     @Req() req: Request,
   ) {
     return this.docs.listInteractions(id, (req as any).user, { take, cursor });
+  }
+
+  @ApiOperation({ summary: 'Apagar documento (OCR e interações serão removidos)' })
+  @Delete(':id')
+  remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
+    return this.docs.delete(id, (req as any).user);
   }
 
   @ApiOperation({ summary: 'Perguntar ao LLM sobre o documento (usa texto do OCR)' })

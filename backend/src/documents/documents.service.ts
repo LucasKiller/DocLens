@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { PrismaService } from '../prisma/prisma.service';
 import { OcrService } from '../ocr/ocr.service';
 import { LlmService } from '../llm/llm.service';
+import * as fs from 'node:fs/promises';
 
 @Injectable()
 export class DocumentsService {
@@ -9,7 +10,7 @@ export class DocumentsService {
     private prisma: PrismaService,
     private ocr: OcrService,
     private llm: LlmService,
-  ) {}
+  ) { }
 
   private assertAccess(doc: { ownerId: string }, user: { userId: string; role: string }) {
     if (user.role !== 'ADMIN' && doc.ownerId !== user.userId) {
@@ -33,6 +34,8 @@ export class DocumentsService {
     void this.ocr.processDocument(doc.id);
     return doc;
   }
+
+
 
   async listForUser(user: { userId: string; role: string }, ownerId?: string) {
     const where =
@@ -94,6 +97,27 @@ export class DocumentsService {
 
     const nextCursor = items.length === take ? items[items.length - 1].id : null;
     return { items, nextCursor };
+  }
+
+  async delete(docId: string, user: { userId: string; role: string }) {
+    const doc = await this.prisma.document.findUnique({
+      where: { id: docId },
+      select: { ownerId: true, storagePath: true, id: true },
+    });
+    if (!doc) throw new NotFoundException('Documento não encontrado');
+    this.assertAccess(doc, user);
+
+    // guarda o caminho do arquivo antes de excluir do DB
+    const path = doc.storagePath;
+
+    // apaga do DB (relacionamentos devem estar com onDelete: Cascade no schema)
+    await this.prisma.document.delete({ where: { id: docId } });
+
+    // tenta remover o arquivo físico (ignora erro se já não existir)
+    if (path) {
+      try { await fs.unlink(path); } catch { }
+    }
+    return { deleted: true, id: docId };
   }
 
   async ask(docId: string, user: { userId: string; role: string }, question: string) {

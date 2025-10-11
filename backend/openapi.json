@@ -394,6 +394,33 @@
         "tags": [
           "Documents"
         ]
+      },
+      "delete": {
+        "operationId": "DocumentsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Apagar documento (OCR e interações serão removidos)",
+        "tags": [
+          "Documents"
+        ]
       }
     },
     "/documents/{id}/status": {
