@@ -70,3 +70,26 @@ body {
   background: linear-gradient(90deg, rgba(99,102,241,.15), rgba(99,102,241,.6), rgba(99,102,241,.15));
 }
 @keyframes ind { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+.markdown {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.markdown h1,.markdown h2,.markdown h3 { margin: .8rem 0 .5rem; font-weight: 700; }
+.markdown h1 { font-size: 1.4rem; }
+.markdown h2 { font-size: 1.2rem; }
+.markdown h3 { font-size: 1.05rem; }
+.markdown p { margin: .5rem 0; }
+.markdown ul,.markdown ol { margin: .5rem 0 .5rem 1.25rem; }
+.markdown li + li { margin-top: .25rem; }
+.markdown blockquote {
+  margin: .75rem 0; padding: .5rem .75rem;
+  border-left: 3px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.04); border-radius: .5rem;
+}
+.markdown table { width: 100%; border-collapse: collapse; margin: .5rem 0; }
+.markdown th,.markdown td {
+  border: 1px solid rgba(255,255,255,.1);
+  padding: .4rem .5rem; text-align: left;
+}
+.markdown th { background: rgba(255,255,255,.06); }
