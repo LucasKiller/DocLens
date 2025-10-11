@@ -90,7 +90,7 @@ export function DocumentsList({ token }: { token: string }) {
         </table>
       </div>
 
-      {selected && <DocumentDetail id={selected} token={token} onClose={()=>setSelected(null)} />}
+      {selected && <DocumentDetail id={selected} token={token} onClose={()=>setSelected(null)} onDeleted={() => { setSelected(null); load(); }} />}
     </div>
   );
 }

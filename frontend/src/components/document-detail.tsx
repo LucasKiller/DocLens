@@ -3,21 +3,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { apiGet, apiPost, API_BASE, authHeaders } from '@/lib/api';
-import { X, Download } from 'lucide-react';
+import { X, Download, Trash2 } from 'lucide-react';
 import { Markdown } from './markdown';
 
 type Interaction = { id?: string; question: string; answer: string; createdAt?: string };
 type Detail = {
-  id: string;
-  filename: string;
-  status: 'QUEUED' | 'PROCESSING' | 'DONE' | 'FAILED' | string;
+  id: string; filename: string; status: string;
   ocr?: { text: string } | null;
   interactions?: Interaction[];
 };
 
 export function DocumentDetail({
-  id, token, onClose,
-}: { id: string; token: string; onClose: () => void }) {
+  id, token, onClose, onDeleted,
+}: { id: string; token: string; onClose: () => void; onDeleted?: () => void }) {
   const [data, setData] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(false);
   const [q, setQ] = useState('');
@@ -30,15 +28,10 @@ export function DocumentDetail({
     try {
       setLoading(true);
       const d = await apiGet<Detail>(`/documents/${id}`, token);
-      const list = await apiGet<{ items: { id: string; question: string; answer: string; createdAt: string }[]; nextCursor: string | null }>(
-        `/documents/${id}/interactions?take=500`,
-        token
+      const list = await apiGet<{ items: Interaction[]; nextCursor: string | null }>(
+        `/documents/${id}/interactions?take=500`, token
       );
-      setData({
-        ...d,
-        interactions: list.items, // histórico completo
-      });
-      // auto-scroll para o fim do histórico ao abrir
+      setData({ ...d, interactions: list.items });
       setTimeout(() => {
         if (histRef.current) histRef.current.scrollTop = histRef.current.scrollHeight;
       }, 0);
@@ -48,7 +41,6 @@ export function DocumentDetail({
       setLoading(false);
     }
   }
-
   useEffect(() => { load(); }, [id]);
 
   async function download() {
@@ -60,12 +52,24 @@ export function DocumentDetail({
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `doclens-${data?.filename ?? id}.txt`;
-      a.click();
+      a.href = url; a.download = `doclens-${data?.filename ?? id}.txt`; a.click();
       URL.revokeObjectURL(url);
+    } catch (e: any) { toast.error(e.message); }
+  }
+
+  async function remove() {
+    if (!confirm('Tem certeza que deseja apagar este documento? Esta ação é irreversível.')) return;
+    try {
+      const res = await fetch(`${API_BASE}/documents/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders(token),
+      });
+      if (!res.ok) throw new Error('Falha ao apagar documento');
+      toast.success('Documento apagado');
+      onClose();
+      onDeleted?.();
     } catch (e: any) {
-      toast.error(e.message);
+      toast.error(e.message || 'Erro ao apagar');
     }
   }
 
@@ -76,51 +80,34 @@ export function DocumentDetail({
     try {
       setSending(true);
       setQ('');
-
       setData(prev => prev ? {
         ...prev,
-        interactions: [...(prev.interactions ?? []), { question, answer: '…', createdAt: new Date().toISOString() }],
+        interactions: [ ...(prev.interactions ?? []), { question, answer: '…', createdAt: new Date().toISOString() } ],
       } : prev);
 
-      const res = await apiPost<{ answer: string } | { interaction: Interaction }>(
-        `/documents/${id}/ask`, { question }, token,
+      const res = await apiPost<{ answer: string; interaction?: Interaction }>(
+        `/documents/${id}/ask`, { question }, token
       );
-
-      const newItem: Interaction = 'interaction' in res
-        ? res.interaction
-        : { question, answer: (res as any).answer, createdAt: new Date().toISOString() };
-
+      const newItem: Interaction = res.interaction ?? {
+        question, answer: res.answer, createdAt: new Date().toISOString(),
+      };
       setData(prev => prev ? {
         ...prev,
-        interactions: [
-          ...(prev.interactions ?? []).slice(0, -1),
-          newItem,
-        ],
+        interactions: [ ...(prev.interactions ?? []).slice(0, -1), newItem ],
       } : prev);
-
-      // scroll para o fim
-      setTimeout(() => {
-        if (histRef.current) histRef.current.scrollTop = histRef.current.scrollHeight;
-      }, 0);
+      setTimeout(() => { if (histRef.current) histRef.current.scrollTop = histRef.current.scrollHeight; }, 0);
     } catch (err: any) {
       toast.error(err.message || 'Erro ao perguntar');
       setData(prev => prev ? { ...prev, interactions: (prev.interactions ?? []).slice(0, -1) } : prev);
-    } finally {
-      setSending(false);
-    }
+    } finally { setSending(false); }
   }
 
   return (
     <div className="fixed inset-0 z-50">
-      {/* backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-
-      {/* modal */}
-      <div
-        className="card absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                   w-[min(100%,1000px)] h-[90vh] flex flex-col"
-        role="dialog" aria-modal="true"
-      >
+      <div className="card absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                      w-[min(100%,1000px)] h-[90vh] flex flex-col"
+           role="dialog" aria-modal="true">
         {/* header */}
         <div className="flex items-center justify-between p-4 border-b border-white/10">
           <div className="flex items-center gap-3">
@@ -135,47 +122,44 @@ export function DocumentDetail({
             <button className="btn-outline" onClick={download} title="Baixar pacote">
               <Download size={16} className="mr-1" /> Baixar
             </button>
+            <button className="btn-danger" onClick={remove} title="Apagar documento">
+              <Trash2 size={16} className="mr-1" /> Apagar
+            </button>
             <button className="opacity-80 hover:opacity-100" onClick={onClose} aria-label="Fechar">
               <X />
             </button>
           </div>
         </div>
 
+        {/* body */}
         <div className="flex-1 min-h-0 flex flex-col p-4 gap-4">
           <div className="card p-4 flex-1 min-h-0 overflow-auto" ref={ocrRef}>
             <h4 className="font-semibold mb-2 opacity-90">Texto OCR</h4>
             {loading
               ? <p className="opacity-70">Carregando…</p>
               : <pre className="whitespace-pre-wrap text-sm opacity-90">
-                {data?.ocr?.text || '(Sem OCR ou ainda processando)'}
-              </pre>}
+                  {data?.ocr?.text || '(Sem OCR ou ainda processando)'}
+                </pre>}
           </div>
 
           <div className="card p-4 flex-[0.7] min-h-0 overflow-auto" ref={histRef}>
-            <h4 className="font-semibold mb-2 opacity-90">Histórico</h4>
+            <h4 className="font-semibold mb-2 opacity-90">Respostas do LLM & histórico</h4>
             <div className="space-y-3">
               {(data?.interactions ?? []).map((it, i) => (
                 <div key={i} className="text-sm">
-                  <div className="opacity-70">Você: {it.question}</div>
-                  <div className="opacity-90">
-                    <Markdown content={it.answer} />
-                  </div>
+                  <div className="opacity-70">Q: {it.question}</div>
+                  <div className="opacity-90"><Markdown content={it.answer} /></div>
                 </div>
               ))}
               {(!data?.interactions || data.interactions.length === 0) && (
-                <div className="opacity-60 text-sm">Sem interações ainda, faça perguntas como "Qual é o resumo do documento?"</div>
+                <div className="opacity-60 text-sm">Sem interações ainda — faça uma pergunta abaixo.</div>
               )}
             </div>
           </div>
 
           <form onSubmit={ask} className="card p-3">
             <div className="flex gap-2">
-              <input
-                className="input flex-1"
-                placeholder="Digite sua pergunta…"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-              />
+              <input className="input flex-1" placeholder="Digite sua pergunta…" value={q} onChange={(e) => setQ(e.target.value)} />
               <button className="btn" type="submit" disabled={sending || !q.trim()}>
                 {sending ? 'Enviando…' : 'Perguntar'}
               </button>

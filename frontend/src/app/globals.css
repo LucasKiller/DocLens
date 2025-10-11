@@ -45,6 +45,19 @@ body {
 }
 .btn-outline:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.45); }
 
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  background-color: #dc2626; /* red-600 */
+  transition: background-color .2s ease;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.btn-danger:hover { background-color: #ef4444; } /* red-500 */
+
 .input {
   background-color: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
